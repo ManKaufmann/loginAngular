@@ -3,7 +3,6 @@ package com.example.loginangular.config;
 import java.io.Serializable;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -27,7 +26,6 @@ public class JwtTokenUtil implements Serializable {
     private String secret;
     //retrieve username from jwt token
     public String getUsernameFromToken(String encodedJWT) {
-        // TODO: 07.09.21
         // Build an HMC verifier using the same secret that was used to sign the JWT
         Verifier verifier = HMACVerifier.newVerifier(this.secret);
 
@@ -52,10 +50,20 @@ public class JwtTokenUtil implements Serializable {
     //check if the token has expired
     private Boolean isTokenExpired(String token) {
         // TODO: 07.09.21
-        return false;
-        //final Date expiration = getExpirationDateFromToken(token);
-        //return expiration.before(new Date());
+        ZonedDateTime expirationDateFromToken = getExpirationDateFromToken(token);
+        boolean before = ZonedDateTime.now(ZoneOffset.UTC).isBefore( expirationDateFromToken );
+        return !before;
     }
+
+    private ZonedDateTime getExpirationDateFromToken(String token) {
+        // Build an HMC verifier using the same secret that was used to sign the JWT
+        Verifier verifier = HMACVerifier.newVerifier(this.secret);
+
+        // Verify and decode the encoded string JWT to a rich object
+        JWT jwt = JWT.getDecoder().decode(token, verifier);
+        return jwt.expiration;
+    }
+
     //generate token for user
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
