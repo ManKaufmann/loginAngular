@@ -1,22 +1,29 @@
 package com.example.loginangular.controller;
 
 import java.util.Objects;
+
+import com.example.loginangular.model.User_FrontendAngular;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.example.loginangular.service.JwtUserDetailsService;
 import com.example.loginangular.config.JwtTokenUtil;
 import com.example.loginangular.model.JwtRequest;
 import com.example.loginangular.model.JwtResponse;
+
+
+import com.example.loginangular.model.UserDTO;
 
 @RestController
 @CrossOrigin
@@ -27,6 +34,7 @@ public class JwtAuthenticationController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
     @Autowired
     private JwtUserDetailsService userDetailsService;
 
@@ -53,6 +61,19 @@ public class JwtAuthenticationController {
         );
 
     }
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    public ResponseEntity<?> saveUser(@RequestBody User_FrontendAngular user) throws Exception {
+
+        return ResponseEntity.ok(userDetailsService.save(user));
+
+    }
+    @RequestMapping(value = "/register", method = RequestMethod.GET)
+    public ResponseEntity<?> saveUser() throws Exception {
+
+        return ResponseEntity.ok(userDetailsService.getall());
+
+    }
+
     private void authenticate(String username, String password) throws Exception {
 
         try {
